@@ -1,0 +1,54 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* A bit more modern font */
+  background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+  background-repeat: no-repeat;
+  height: 100vh;
+  overflow: hidden;
+  color: #333;
+}
+
+a {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  background: #ccc;
+  background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+}
+ul{
+    list-style: none;
+    padding-left: 0;
+}
+h1 {
+  text-align: center;
+  background-image: linear-gradient(to top, #e8198b 0%, #c7eafd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.list{
+   display: flex;
+   justify-content: center;
+   gap: 20px;
+}
+.list li {
+  display: block;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.4s ease;
+   filter: opacity(50%);
+}
+
+.list li:hover {
+  text-align: center;
+  transform: scale(1.05); /* thêm hiệu ứng nhẹ khi hover */
+  filter: opacity(100%);
+}
