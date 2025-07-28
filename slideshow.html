@@ -1,27 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slideshow</title>
-    <link rel="stylesheet" href="./assets/css/reset.css">
-    <link rel="stylesheet" href="./assets/css/slideshow.css">
-</head>
-<body>
-    <div class="slideshow-container">
-        <h1>Slideshow</h1>
-        <div class="slide-list">
-            <div class="slide-item"><img src="./assets/img/slide1.jpg" alt="Slide 1"></div>
-            <div class="slide-item"><img src="./assets/img/slide2.jpg" alt="Slide 2"></div>
-            <div class="slide-item"><img src="./assets/img/slide3.jpg" alt="Slide 3"></div>
-            <div class="slide-item"><img src="./assets/img/slide4.jpg" alt="Slide 4"></div>
-            <div class="slide-item"><img src="./assets/img/slide5.jpg" alt="Slide 5"></div>
-            <div class="slide-item"><img src="./assets/img/slide6.jpg" alt="Slide 6"></div>
-        </div>
-        <button class="btn prev">Prev</button>
-        <button class="btn next">Next</button>
-        <div class="pagination"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SlideShow</title>
+    <!-- Link Reset Css -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+      integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Link Css -->
+    <link rel="stylesheet" href="./assets/css/reset.css" />
+    <link rel="stylesheet" href="./assets/css/slideshow.css" />
+  </head>
+  <body>
+    <div id="my-slide">
+      <div>
+        <img src="./assets/img/anh1.jpg" alt="sơn tùng">
+      </div>
+      <div>
+        <img src="./assets/img/anh2.jpg" alt="sơn tùng">
+      </div>
+      <div>
+        <img src="./assets/img/anh3.jpg" alt="sơn tùng">
+      </div>
+      <div>
+        <img src="./assets/img/anh4.jpg" alt="G-Dragon">
+      </div>
+      <div>
+        <img src="./assets/img/anh5.jpg" alt="nữ Idol">
+      </div>
+      <div>
+        <img src="./assets/img/anh6.jpg" alt="nữ Idol">
+      </div>
     </div>
+
     <script src="./js/slideshow.js"></script>
-</body>
+
+    <script>
+      const mySlide = new Slidezy("#my-slide", {
+        items: 1,
+        speed: 300,
+        loop: true,
+        nav: true,
+        control:true,
+        slideBy:1,
+        autoplay:true
+      });
+    </script>
+  </body>
 </html>

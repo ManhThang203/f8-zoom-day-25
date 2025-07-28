@@ -1,26 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabs</title>
-    <link rel="stylesheet" href="./assets/css/reset.css">
-    <link rel="stylesheet" href="./assets/css/tabs.css">
-</head>
-<body>
-    <div class="tabs-container">
-        <h1>Tabs</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./assets/css/tabs.css" />
+  </head>
+  <body>
+    <!-- Tab 1 -->
+    <div class="container" id="container">
+      <div class="tab" id="tab1">
         <div class="tab-list">
-            <div class="tab-item" data-tab="1">Tab 1</div>
-            <div class="tab-item active" data-tab="2">Tab 2</div>
-            <div class="tab-item" data-tab="3">Tab 3</div>
+          <button class="tab-item">Tab 1</button>
+          <button class="tab-item">Tab 2</button>
+          <button class="tab-item">Tab 3</button>
         </div>
-        <div class="tab-content">
-            <div class="tab-pane" data-tab="1">Like 😴</div>
-            <div class="tab-pane active" data-tab="2">Unlike 🙄</div>
-            <div class="tab-pane" data-tab="3">Lovely 😊</div>
+      </div>
+      <div class="tab-content">
+        <div class="content">Content 1</div>
+        <div class="content">Content 2</div>
+        <div class="content">Content 3</div>
+      </div>
+    </div>
+
+    <!-- Tab 2 -->
+    <div class="container" id="container">
+      <div class="tab" id="tab2">
+        <div class="tab-list">
+          <button class="tab-item">Tab 1</button>
+          <button class="tab-item">Tab 2</button>
+          <button class="tab-item">Tab 3</button>
+          <button class="tab-item">Tab 4</button>
         </div>
+      </div>
+      <div class="tab-content">
+        <div class="content">Content 1</div>
+        <div class="content">Content 2</div>
+        <div class="content">Content 3</div>
+        <div class="content">Content 4</div>
+      </div>
     </div>
     <script src="./js/tabs.js"></script>
-</body>
+  </body>
 </html>

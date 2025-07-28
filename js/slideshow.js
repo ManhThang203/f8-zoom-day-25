@@ -1,69 +1,246 @@
-function initSlideshow(containerSelector) {
-  const container = document.querySelector(containerSelector);
-  if (!container) return;
-
-  const slideList = container.querySelector(".slide-list");
-  const slides = container.querySelectorAll(".slide-item");
-  const prevBtn = container.querySelector(".prev");
-  const nextBtn = container.querySelector(".next");
-  const pagination = container.querySelector(".pagination");
-  let currentIndex = 0;
-  let isAnimating = false;
-  let autoplayInterval;
-
-  // Create pagination dots
-  slides.forEach((_, index) => {
-    const dot = document.createElement("span");
-    dot.classList.add("dot");
-    dot.dataset.index = index;
-    pagination.appendChild(dot);
-  });
-  const dots = pagination.querySelectorAll(".dot");
-
-  function updateSlide(index, direction = "next") {
-    if (isAnimating) return;
-    isAnimating = true;
-
-    const newIndex = (index + slides.length) % slides.length;
-    slideList.style.transform = `translateX(-${newIndex * 100}%)`;
-
-    dots.forEach((dot) => dot.classList.remove("active"));
-    dots[newIndex].classList.add("active");
-    currentIndex = newIndex;
-
-    setTimeout(() => {
-      isAnimating = false;
-    }, 500);
+function Slidezy(select, option = {}) {
+  this.container = document.querySelector(select);
+  if (!this.container) {
+    console.error(`Slider: ${this.container} dont next`);
+    return;
   }
 
-  function startAutoplay() {
-    autoplayInterval = setInterval(() => updateSlide(currentIndex + 1), 3000);
-  }
+  this.opt = Object.assign(
+    {
+      items: 1,
+      speed: 300,
+      loop: false,
+      nav: true,
+      control: true,
+      controlText: ["fa-solid fa-angle-left", "fa-solid fa-angle-right"],
+      prevButton: null,
+      nextButton: null,
+      slideBy: 1,
+      autoplay: false,
+      autoplayTimeout: 3000,
+      autoplayHoverPauseL: true,
+    },
+    option
+  );
+  this.originalSlides = Array.from(this.container.children);
 
-  function stopAutoplay() {
-    clearInterval(autoplayInterval);
-  }
+  this.slides = this.originalSlides.slice(0);
 
-  prevBtn.addEventListener("click", () => {
-    updateSlide(currentIndex - 1, "prev");
-  });
-
-  nextBtn.addEventListener("click", () => {
-    updateSlide(currentIndex + 1, "next");
-  });
-
-  dots.forEach((dot) => {
-    dot.addEventListener("click", () => {
-      updateSlide(parseInt(dot.dataset.index));
-    });
-  });
-
-  container.addEventListener("mouseenter", stopAutoplay);
-  container.addEventListener("mouseleave", startAutoplay);
-
-  // Initialize
-  updateSlide(0);
-  startAutoplay();
+  this.currentIndex = this.opt.loop ? this._getcloneCount() : 0;
+  this._init();
+  this._updatePosition();
 }
 
-initSlideshow(".slideshow-container");
+Slidezy.prototype._init = function () {
+  this.container.className = "slide-wrapper";
+
+  this._createContent();
+  this._creatTrack();
+
+  this.showNav = this._getSlideCount() > this.opt.items;
+  if (this.opt.control && this.showNav) {
+    this._createControl();
+  }
+
+  if (this.opt.nav && this.showNav) {
+    this._creatNav();
+  }
+
+  if (this.opt.autoplay) {
+    this._startAutoplay();
+
+    if (this.opt.autoplayHoverPauseL) {
+      this.container.onmouseenter = () => {
+        this._stopAutoplay();
+      };
+      this.container.onmouseleave = () => {
+        this._startAutoplay();
+      };
+    }
+  }
+};
+
+Slidezy.prototype._startAutoplay = function () {
+  if (this.autoplayTimer) return;
+
+  const slideBy = this._getSlideBy();
+
+  this.autoplayTimer = setInterval(() => {
+    this._moveSlide(slideBy);
+  }, this.opt.autoplayTimeout);
+};
+
+Slidezy.prototype._stopAutoplay = function () {
+  clearInterval(this.autoplayTimer);
+  this.autoplayTimer = null;
+};
+
+Slidezy.prototype._createContent = function () {
+  this.content = document.createElement("div");
+  this.content.className = "slidezy-content";
+  this.container.appendChild(this.content);
+};
+
+Slidezy.prototype._getcloneCount = function () {
+  const slideCount = this._getSlideCount();
+
+  if (slideCount <= this.opt.items) return 0;
+
+  const slideBy = this._getSlideBy();
+  const cloneCount = slideBy + this.opt.items;
+
+  return cloneCount > slideCount ? slideCount : cloneCount;
+};
+
+Slidezy.prototype._creatTrack = function () {
+  this.track = document.createElement("div");
+  this.track.className = "slide-track";
+
+  const cloneCount = this._getcloneCount();
+  console.log(cloneCount);
+
+  if (this.opt.loop && cloneCount > 0) {
+    const cloneHead = this.slides
+      .slice(-cloneCount)
+      .map((node) => node.cloneNode(true));
+    const cloneTail = this.slides
+      .slice(0, cloneCount)
+      .map((node) => node.cloneNode(true));
+
+    this.slides = cloneHead.concat(this.slides.concat(cloneTail));
+  }
+
+  this.slides.forEach((slide) => {
+    slide.className = "slide-item";
+    slide.style.flexBasis = `calc(100% / ${this.opt.items})`;
+    this.track.appendChild(slide);
+  });
+  this.content.appendChild(this.track);
+};
+
+Slidezy.prototype._getSlideBy = function () {
+  return this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
+};
+
+Slidezy.prototype._createControl = function () {
+  // Nút Prev Button
+  this.preBtn = this.opt.prevButton
+    ? document.querySelector(this.opt.prevButton)
+    : document.createElement("button");
+  // Nút Next Button
+  this.nextBtn = this.opt.nextButton
+    ? document.querySelector(this.opt.nextButton)
+    : document.createElement("button");
+
+  if (!this.opt.prevButton) {
+    this.preBtn.className = "pre-slide";
+    this.iconPre = document.createElement("i");
+    this.iconPre.className = this.opt.controlText[0];
+    this.preBtn.appendChild(this.iconPre);
+    this.content.append(this.preBtn);
+  }
+  if (!this.opt.nextButton) {
+    this.nextBtn.className = "next-slide";
+    this.iconNext = document.createElement("i");
+    this.iconNext.className = this.opt.controlText[1];
+    this.nextBtn.appendChild(this.iconNext);
+    this.content.append(this.nextBtn);
+  }
+
+  const slideBy = this._getSlideBy();
+  this.preBtn.onclick = () => this._moveSlide(-slideBy);
+  this.nextBtn.onclick = () => this._moveSlide(slideBy);
+};
+
+Slidezy.prototype._moveSlide = function (step) {
+  // nếu là true thì return
+  if (this._isAnimating) return;
+
+  this._isAnimating = true;
+  const maxIndex = this.slides.length - this.opt.items;
+  this.currentIndex = Math.min(Math.max(this.currentIndex + step, 0), maxIndex);
+
+  setTimeout(() => {
+    if (this.opt.loop) {
+      const slideCouter = this._getSlideCount();
+
+      if (this.currentIndex <= this._getcloneCount()) {
+        this.currentIndex += slideCouter;
+        this._updatePosition(true);
+      } else if (this.currentIndex >= slideCouter) {
+        this.currentIndex -= slideCouter;
+        this._updatePosition(true);
+      }
+    }
+    this._isAnimating = false;
+  }, this.opt.speed);
+
+  this._updatePosition();
+};
+
+Slidezy.prototype._getSlideCount = function () {
+  return this.originalSlides.length;
+};
+
+Slidezy.prototype._creatNav = function () {
+  this.navWrapper = document.createElement("div");
+  this.navWrapper.className = "slidezy-nav";
+  // Nếu mà loop thì là số item * 2 mà khi loop (this.slides.length = 12)
+  // lên trong đoạn này khi loop hay không loop thì đều là 6
+  const slideCouter = this._getSlideCount();
+  // số trang sẽ bằng số slide chia số item hiển thị thì ra số page
+  // làm tròn trên
+  const pageCount = Math.ceil(slideCouter / this.opt.items);
+
+  for (let i = 0; i < pageCount; i++) {
+    const dot = document.createElement("button");
+    dot.className = "slidezy-dot";
+
+    if (i === 0) {
+      dot.classList.add("active");
+    }
+
+    dot.onclick = () => {
+      this.currentIndex = this.opt.loop
+        ? i * this.opt.items + this._getcloneCount()
+        : i * this.opt.items;
+      this._updatePosition();
+    };
+
+    this.navWrapper.appendChild(dot);
+  }
+
+  this.container.appendChild(this.navWrapper);
+};
+
+Slidezy.prototype._updateNav = function () {
+  if (!this.showNav) return;
+
+  let realIndex = this.currentIndex;
+
+  if (this.opt.loop) {
+    const slideBy = this._getSlideCount();
+    realIndex = (this.currentIndex - this._getcloneCount() + slideBy) % slideBy;
+  }
+
+  const pageIndex = Math.floor(realIndex / this.opt.items);
+  const dots = Array.from(this.navWrapper.children);
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("active", index === pageIndex);
+  });
+};
+
+Slidezy.prototype._updatePosition = function (instant = false) {
+  this.track.style.transition = instant
+    ? "none"
+    : `transform ${this.opt.speed}ms ease`;
+  this.offset = `-${this.currentIndex * (100 / this.opt.items)}`;
+  this.track.style.transform = `translateX(${this.offset}%)`;
+
+  if (this.opt.nav && !instant) {
+    this._updateNav();
+  }
+};
+
+// 4 5 6 1 2 3 4 5 6 1 2 3
+// 0 1 2 3 4 5 6 7 8 9 10 11
